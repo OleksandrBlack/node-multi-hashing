@@ -4,7 +4,7 @@
             "target_name": "multihashing",
             "sources": [
                 "multihashing.cc",
-                "scryptjane.c",
+                #"scryptjane.c",
                 "scryptn.c",
                 "yescrypt/sha256_Y.c",
                 "yescrypt/yescrypt-best.c",
@@ -68,7 +68,8 @@
             ],
             "include_dirs": [
                 "crypto",
-                "sha3"
+                "sha3",
+		"<!(node -e \"require('nan')\")"
             ],
             "cflags": [
                 "-D_GNU_SOURCE -maes -fPIC -Ofast -flto -fuse-linker-plugin -funroll-loops -funswitch-loops -fpeel-loops"
