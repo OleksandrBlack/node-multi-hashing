@@ -45,20 +45,15 @@ extern "C" {
 using namespace node;
 using namespace v8;
 
-Handle<Value> except(const char* msg) {
-    return ThrowException(Exception::Error(String::New(msg)));
-}
+NAN_METHOD(quark) {
 
-Handle<Value> quark(const Arguments& args) {
-    HandleScope scope;
+if (info.Length() < 1)
+        return THROW_ERROR_EXCEPTION("You must provide one argument.");
 
-    if (args.Length() < 1)
-        return except("You must provide one argument.");
-
-    Local<Object> target = args[0]->ToObject();
+    Local<Object> target = info[0]->ToObject();
 
     if(!Buffer::HasInstance(target))
-        return except("Argument should be a buffer object.");
+        return THROW_ERROR_EXCEPTION("Argument should be a buffer object.");
 
     char * input = Buffer::Data(target);
     char output[32];
@@ -67,20 +62,18 @@ Handle<Value> quark(const Arguments& args) {
 
     quark_hash(input, output, input_len);
 
-    Buffer* buff = Buffer::New(output, 32);
-    return scope.Close(buff->handle_);
+    info.GetReturnValue().Set(Nan::NewBuffer(output, 32).ToLocalChecked());
 }
 
-Handle<Value> x11(const Arguments& args) {
-    HandleScope scope;
+NAN_METHOD(x11) {
 
-    if (args.Length() < 1)
-        return except("You must provide one argument.");
+    if (info.Length() < 1)
+         return THROW_ERROR_EXCEPTION("You must provide one argument.");
 
     Local<Object> target = args[0]->ToObject();
 
     if(!Buffer::HasInstance(target))
-        return except("Argument should be a buffer object.");
+        return THROW_ERROR_EXCEPTION("Argument should be a buffer object.");
 
     char * input = Buffer::Data(target);
     char output[32];
@@ -89,8 +82,7 @@ Handle<Value> x11(const Arguments& args) {
 
     x11_hash(input, output, input_len);
 
-    Buffer* buff = Buffer::New(output, 32);
-    return scope.Close(buff->handle_);
+    info.GetReturnValue().Set(Nan::NewBuffer(output, 32).ToLocalChecked());
 }
 
 Handle<Value> x5(const Arguments& args) {
@@ -516,24 +508,23 @@ Handle<Value> shavite3(const Arguments& args) {
     return scope.Close(buff->handle_);
 }
 
-Handle<Value> cryptonight(const Arguments& args) {
-    HandleScope scope;
+NAN_METHOD(cryptonight) {
 
     bool fast = false;
 
-    if (args.Length() < 1)
-        return except("You must provide one argument.");
+    if (info.Length() < 1)
+         return THROW_ERROR_EXCEPTION("You must provide one argument.");
     
-    if (args.Length() >= 2) {
-        if(!args[1]->IsBoolean())
-            return except("Argument 2 should be a boolean");
-        fast = args[1]->ToBoolean()->BooleanValue();
+    if (info.Length() >= 2) {
+         if(!info[1]->IsBoolean())
+             return THROW_ERROR_EXCEPTION("Argument 2 should be a boolean");
+         fast = info[1]->ToBoolean()->BooleanValue();
     }
 
-    Local<Object> target = args[0]->ToObject();
+    Local<Object> target = info[0]->ToObject();
 
     if(!Buffer::HasInstance(target))
-        return except("Argument should be a buffer object.");
+        return THROW_ERROR_EXCEPTION("Argument should be a buffer object.");
 
     char * input = Buffer::Data(target);
     char output[32];
@@ -545,8 +536,7 @@ Handle<Value> cryptonight(const Arguments& args) {
     else
         cryptonight_hash(input, output, input_len);
 
-    Buffer* buff = Buffer::New(output, 32);
-    return scope.Close(buff->handle_);
+    info.GetReturnValue().Set(Nan::NewBuffer(output, 32).ToLocalChecked());
 }
 
 Handle<Value> x13(const Arguments& args) {
@@ -738,44 +728,38 @@ Handle<Value> whirlpoolx(const Arguments& args) {
     return scope.Close(buff->handle_);
 }
 
-Handle<Value> lyra2re(const Arguments& args) {
-   HandleScope scope;
+NAN_METHOD(lyra2re) {
+    if (info.Length() < 1)
+         return THROW_ERROR_EXCEPTION("You must provide one argument.");
 
-    if (args.Length() < 1)
-        return except("You must provide one argument.");
-
-    Local<Object> target = args[0]->ToObject();
+    Local<Object> target = info[0]->ToObject();
 
     if(!Buffer::HasInstance(target))
-        return except("Argument should be a buffer object.");
+        return THROW_ERROR_EXCEPTION("Argument should be a buffer object.");
 
     char * input = Buffer::Data(target);
     char output[32];
 
     lyra2re_hash(input, output);
 
-   Buffer* buff = Buffer::New(output, 32);
-    return scope.Close(buff->handle_);
+   info.GetReturnValue().Set(Nan::NewBuffer(output, 32).ToLocalChecked());
 }
 
-Handle<Value> lyra2re2(const Arguments& args){
- HandleScope scope;
-
+NAN_METHOD(lyra2re2) {
     if (args.Length() < 1)
-        return except("You must provide one argument.");
+        return THROW_ERROR_EXCEPTION("You must provide one argument.");
 
-    Local<Object> target = args[0]->ToObject();
+    Local<Object> target = info[0]->ToObject();
 
     if(!Buffer::HasInstance(target))
-        return except("Argument should be a buffer object.");
+        return THROW_ERROR_EXCEPTION("Argument should be a buffer object.");
 
     char * input = Buffer::Data(target);
     char output[32];
 
     lyra2re2_hash(input, output);
 
-   Buffer* buff = Buffer::New(output, 32);
-    return scope.Close(buff->handle_);
+   info.GetReturnValue().Set(Nan::NewBuffer(output, 32).ToLocalChecked());
 }
 
 
@@ -847,41 +831,41 @@ Handle<Value> c11(const Arguments& args) {
 }
 
 void init(Handle<Object> exports) {
-    exports->Set(String::NewSymbol("quark"), FunctionTemplate::New(quark)->GetFunction());
-    exports->Set(String::NewSymbol("x11"), FunctionTemplate::New(x11)->GetFunction());
-    exports->Set(String::NewSymbol("scrypt"), FunctionTemplate::New(scrypt)->GetFunction());
-    exports->Set(String::NewSymbol("scryptn"), FunctionTemplate::New(scryptn)->GetFunction());
-    exports->Set(String::NewSymbol("scryptjane"), FunctionTemplate::New(scryptjane)->GetFunction());
-    exports->Set(String::NewSymbol("keccak"), FunctionTemplate::New(keccak)->GetFunction());
-    exports->Set(String::NewSymbol("bcrypt"), FunctionTemplate::New(bcrypt)->GetFunction());
-    exports->Set(String::NewSymbol("skein"), FunctionTemplate::New(skein)->GetFunction());
-    exports->Set(String::NewSymbol("groestl"), FunctionTemplate::New(groestl)->GetFunction());
-    exports->Set(String::NewSymbol("groestlmyriad"), FunctionTemplate::New(groestlmyriad)->GetFunction());
-    exports->Set(String::NewSymbol("blake"), FunctionTemplate::New(blake)->GetFunction());
-    exports->Set(String::NewSymbol("fugue"), FunctionTemplate::New(fugue)->GetFunction());
-    exports->Set(String::NewSymbol("qubit"), FunctionTemplate::New(qubit)->GetFunction());
-    exports->Set(String::NewSymbol("hefty1"), FunctionTemplate::New(hefty1)->GetFunction());
-    exports->Set(String::NewSymbol("shavite3"), FunctionTemplate::New(shavite3)->GetFunction());
-    exports->Set(String::NewSymbol("cryptonight"), FunctionTemplate::New(cryptonight)->GetFunction());
-    exports->Set(String::NewSymbol("x13"), FunctionTemplate::New(x13)->GetFunction());
-    exports->Set(String::NewSymbol("x14"), FunctionTemplate::New(x14)->GetFunction());
-    exports->Set(String::NewSymbol("boolberry"), FunctionTemplate::New(boolberry)->GetFunction());
-    exports->Set(String::NewSymbol("nist5"), FunctionTemplate::New(nist5)->GetFunction());
-    exports->Set(String::NewSymbol("sha1"), FunctionTemplate::New(sha1)->GetFunction());
-    exports->Set(String::NewSymbol("x15"), FunctionTemplate::New(x15)->GetFunction());
-    exports->Set(String::NewSymbol("whirlpoolx"), FunctionTemplate::New(whirlpoolx)->GetFunction());
-    exports->Set(String::NewSymbol("fresh"), FunctionTemplate::New(fresh)->GetFunction());
-    exports->Set(String::NewSymbol("zr5"), FunctionTemplate::New(zr5)->GetFunction());
-    exports->Set(String::NewSymbol("ziftr"), FunctionTemplate::New(zr5)->GetFunction());
-    exports->Set(String::NewSymbol("neoscrypt"), FunctionTemplate::New(neoscrypt_hash)->GetFunction());
-    exports->Set(String::NewSymbol("yescrypt"), FunctionTemplate::New(yescrypt)->GetFunction());
-    exports->Set(String::NewSymbol("lyra2re"), FunctionTemplate::New(lyra2re)->GetFunction());
-    exports->Set(String::NewSymbol("lyra2re2"), FunctionTemplate::New(lyra2re2)->GetFunction());
-    exports->Set(String::NewSymbol("c11"), FunctionTemplate::New(c11)->GetFunction());
-	exports->Set(String::NewSymbol("s3"), FunctionTemplate::New(s3)->GetFunction());
-	exports->Set(String::NewSymbol("dcrypt"), FunctionTemplate::New(dcrypt)->GetFunction());
-    exports->Set(String::NewSymbol("jh"), FunctionTemplate::New(jh)->GetFunction());
-	exports->Set(String::NewSymbol("c11"), FunctionTemplate::New(c11)->GetFunction());
+     exports->Set(Nan::New<String>("quark").ToLocalChecked(), Nan::New<FunctionTemplate>(quark)->GetFunction());
+     exports->Set(Nan::New<String>("x11").ToLocalChecked(), Nan::New<FunctionTemplate>(x11)->GetFunction());
+     exports->Set(Nan::New<String>("scrypt").ToLocalChecked(), Nan::New<FunctionTemplate>(scrypt)->GetFunction());
+     exports->Set(Nan::New<String>("scryptn").ToLocalChecked(), Nan::New<FunctionTemplate>(scryptn)->GetFunction());
+    exports->Set(Nan::New<String>("scryptjane").ToLocalChecked(), Nan::New<FunctionTemplate>(scryptjane)->GetFunction());
+    exports->Set(Nan::New<String>("keccak").ToLocalChecked(), Nan::New<FunctionTemplate>(keccak)->GetFunction());
+    exports->Set(Nan::New<String>("bcrypt").ToLocalChecked(), Nan::New<FunctionTemplate>(bcrypt)->GetFunction());
+    exports->Set(Nan::New<String>("skein").ToLocalChecked(), Nan::New<FunctionTemplate>(skein)->GetFunction());
+    exports->Set(Nan::New<String>("groestl").ToLocalChecked(), Nan::New<FunctionTemplate>(groestl)->GetFunction());
+    exports->Set(Nan::New<String>("groestlmyriad").ToLocalChecked(), Nan::New<FunctionTemplate>(groestlmyriad)->GetFunction());
+    exports->Set(Nan::New<String>("blake").ToLocalChecked(), Nan::New<FunctionTemplate>(blake)->GetFunction());
+    exports->Set(Nan::New<String>("fugue").ToLocalChecked(), Nan::New<FunctionTemplate>(fugue)->GetFunction());
+    exports->Set(Nan::New<String>("qubit").ToLocalChecked(), Nan::New<FunctionTemplate>(qubit)->GetFunction());
+    exports->Set(Nan::New<String>("hefty1").ToLocalChecked(), Nan::New<FunctionTemplate>(hefty1)->GetFunction());
+    exports->Set(Nan::New<String>("shavite3").ToLocalChecked(), Nan::New<FunctionTemplate>(shavite3)->GetFunction());
+    exports->Set(Nan::New<String>("cryptonight").ToLocalChecked(), Nan::New<FunctionTemplate>(cryptonight)->GetFunction());
+    exports->Set(Nan::New<String>("x13").ToLocalChecked(), Nan::New<FunctionTemplate>(x13)->GetFunction());
+    exports->Set(Nan::New<String>("x14").ToLocalChecked(), Nan::New<FunctionTemplate>(x14)->GetFunction());
+    exports->Set(Nan::New<String>("boolberry").ToLocalChecked(), Nan::New<FunctionTemplate>(boolberry)->GetFunction());
+    exports->Set(Nan::New<String>("nist5").ToLocalChecked(), Nan::New<FunctionTemplate>(nist5)->GetFunction());
+    exports->Set(Nan::New<String>("sha1").ToLocalChecked(), Nan::New<FunctionTemplate>(sha1)->GetFunction());
+    exports->Set(Nan::New<String>("x15").ToLocalChecked(), Nan::New<FunctionTemplate>(x15)->GetFunction());
+    exports->Set(Nan::New<String>("whirlpoolx").ToLocalChecked(), Nan::New<FunctionTemplate>(whirlpoolx)->GetFunction());
+    exports->Set(Nan::New<String>("fresh").ToLocalChecked(), Nan::New<FunctionTemplate>(fresh)->GetFunction());
+    exports->Set(Nan::New<String>("zr5").ToLocalChecked(), Nan::New<FunctionTemplate>(zr5)->GetFunction());
+    exports->Set(Nan::New<String>("ziftr").ToLocalChecked(), Nan::New<FunctionTemplate>(zr5)->GetFunction());
+    exports->Set(Nan::New<String>("neoscrypt").ToLocalChecked(), Nan::New<FunctionTemplate>(neoscrypt_hash)->GetFunction());
+    exports->Set(Nan::New<String>("yescrypt").ToLocalChecked(), Nan::New<FunctionTemplate>(yescrypt)->GetFunction());
+    exports->Set(Nan::New<String>("lyra2re").ToLocalChecked(), Nan::New<FunctionTemplate>(lyra2re)->GetFunction());
+    exports->Set(Nan::New<String>("lyra2re2").ToLocalChecked(), Nan::New<FunctionTemplate>(lyra2re2)->GetFunction());
+    exports->Set(Nan::New<String>("c11").ToLocalChecked(), Nan::New<FunctionTemplate>(c11)->GetFunction());
+    exports->Set(Nan::New<String>("s3").ToLocalChecked(), Nan::New<FunctionTemplate>(s3)->GetFunction());
+    exports->Set(Nan::New<String>("dcrypt").ToLocalChecked(), Nan::New<FunctionTemplate>(dcrypt)->GetFunction());
+    exports->Set(Nan::New<String>("jh").ToLocalChecked(), Nan::New<FunctionTemplate>(jh)->GetFunction());
+    exports->Set(Nan::New<String>("c11").ToLocalChecked(), Nan::New<FunctionTemplate>(c11)->GetFunction());
 }
 
 NODE_MODULE(multihashing, init)
