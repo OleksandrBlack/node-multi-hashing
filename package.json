@@ -1,14 +1,15 @@
 {
-  "name": "unomp-multi-hashing",
-  "version": "1.0.0",
-  "main": "multihashing",
-  "author": {
-    "name": "zone117x"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/UNOMP/node-multi-hashing.git"
-  },
+    "name": "multi-hashing",
+    "version": "0.0.9",
+    "main": "multihashing",
+    "author": {
+        "name": "Matthew Little",
+        "email": "zone117x@gmail.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/zone117x/node-multi-hashing.git"
+    },
   "dependencies": {
         "bindings": "^1.2.1",
         "nan": "^2.6.2"
@@ -30,14 +31,5 @@
     "sha1",
     "neoscrypt",
     "decrypt"
-  ],
-    "scripts": {
-    "install": "node-gyp rebuild"
-  },
-  "gypfile": true,
-  "readmeFilename": "README.md",
-  "description": "node-multi-hashing",
-  "bugs": {
-    "url": "https://github.com/UNOMP/node-multi-hashing/issues"
-  }
+    ]
 }
