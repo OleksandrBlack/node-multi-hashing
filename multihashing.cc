@@ -2,6 +2,7 @@
 #include <node_buffer.h>
 #include <v8.h>
 #include <stdint.h>
+#include "nan.h"
 
 extern "C" {
     #include "bcrypt.h"
@@ -39,6 +40,7 @@ extern "C" {
 }
 
 #include "boolberry.h"
+#define THROW_ERROR_EXCEPTION(x) Nan::ThrowError(x)
 
 using namespace node;
 using namespace v8;
