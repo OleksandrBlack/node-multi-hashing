@@ -70,7 +70,7 @@ NAN_METHOD(x11) {
     if (info.Length() < 1)
          return THROW_ERROR_EXCEPTION("You must provide one argument.");
 
-    Local<Object> target = args[0]->ToObject();
+    Local<Object> target = info[0]->ToObject();
 
     if(!Buffer::HasInstance(target))
         return THROW_ERROR_EXCEPTION("Argument should be a buffer object.");
@@ -134,7 +134,7 @@ NAN_METHOD(lyra2re) {
 }
 
 NAN_METHOD(lyra2re2) {
-    if (args.Length() < 1)
+    if (info.Length() < 1)
         return THROW_ERROR_EXCEPTION("You must provide one argument.");
 
     Local<Object> target = info[0]->ToObject();
